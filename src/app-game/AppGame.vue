@@ -12,23 +12,22 @@ import { isGameOver } from './common/game-logic';
 
 @Component({})
 export default class AppGame extends Vue {
-  private canvasCtx!: CanvasRenderingContext2D;
   private interval: any;
 
   public mounted() {
     const canvas = this.$el as HTMLCanvasElement;
     canvas.width = BOARD_WIDTH * (CELL_SIZE + GAP_SIZE) - GAP_SIZE;
     canvas.height = BOARD_HEIGHT * (CELL_SIZE + GAP_SIZE) - GAP_SIZE;
-    this.canvasCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    const canvasCtx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-    this.initGame();
+    this.initGame(canvasCtx);
   }
 
   public beforeDestroy() {
     this.cleanup();
   }
 
-  private initGame() {
+  private initGame(canvasCtx: CanvasRenderingContext2D) {
     this.$store.dispatch(INIT);
 
     // set game pace
@@ -43,12 +42,12 @@ export default class AppGame extends Vue {
     this.$store.watch((state: State) => state.scene, (scene: Scene) => {
       if (isGameOver(scene)) {
         window.requestAnimationFrame(() => {
-          renderGameOver(this.canvasCtx);
+          renderGameOver(canvasCtx);
         });
         this.cleanup();
       } else {
         window.requestAnimationFrame(() => {
-          renderScene(this.canvasCtx, scene);
+          renderScene(canvasCtx, scene);
         });
       }
     });
